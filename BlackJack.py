@@ -5,7 +5,7 @@ import numpy as np
 import scipy.stats as stats
 import pylab as pl
 import matplotlib.pyplot as plt
-
+import csv
 from importer.StrategyImporter import StrategyImporter
 
 
@@ -456,7 +456,10 @@ class Game(object):
 if __name__ == "__main__":
     importer = StrategyImporter(sys.argv[1])
     HARD_STRATEGY, SOFT_STRATEGY, PAIR_STRATEGY = importer.import_player_strategy()
+    f = open('blackjack_output.csv', 'w')
 
+    writer = csv.writer(f)
+    writer.writerow(["game","net winnings","bet"])
     moneys = []
     bets = []
     countings = []
@@ -471,9 +474,11 @@ if __name__ == "__main__":
         moneys.append(game.get_money())
         bets.append(game.get_bet())
         countings += game.shoe.count_history
+        writer.writerow([g+1,game.get_money(),game.get_bet()])
 
-        print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
-
+        #print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
+    
+    f.close()
     sume = 0.0
     total_bet = 0.0
     for value in moneys:
