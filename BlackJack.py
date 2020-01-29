@@ -456,10 +456,12 @@ class Game(object):
 if __name__ == "__main__":
     importer = StrategyImporter(sys.argv[1])
     HARD_STRATEGY, SOFT_STRATEGY, PAIR_STRATEGY = importer.import_player_strategy()
-    f = open('blackjack_output.csv', 'w')
+    f1 = open('blackjack_output.csv', 'w')
+    f2 = open('blackjack_summary.csv', 'w')
 
-    writer = csv.writer(f)
-    writer.writerow(["game","net winnings","bet"])
+    writer1 = csv.writer(f1)
+    writer2 = csv.writer(f2)
+    writer1.writerow(["game","net winnings","bet"])
     moneys = []
     bets = []
     countings = []
@@ -474,11 +476,11 @@ if __name__ == "__main__":
         moneys.append(game.get_money())
         bets.append(game.get_bet())
         countings += game.shoe.count_history
-        writer.writerow([g+1,game.get_money(),game.get_bet()])
+        writer1.writerow([g+1,game.get_money(),game.get_bet()])
 
         #print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
     
-    f.close()
+    f1.close()
     sume = 0.0
     total_bet = 0.0
     for value in moneys:
@@ -489,7 +491,10 @@ if __name__ == "__main__":
     print "\n%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)
     print "%0.2f total bet" % total_bet
     print("Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet)))
-
+    writer2.writerow(["%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)])
+    writer2.writerow(["%0.2f total bet" % total_bet])
+    writer2.writerow(["Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet))])
+    f2.close()
     moneys = sorted(moneys)
     fit = stats.norm.pdf(moneys, np.mean(moneys), np.std(moneys))  # this is a fitting indeed
     pl.plot(moneys, fit, '-o')
