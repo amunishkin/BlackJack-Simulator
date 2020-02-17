@@ -514,8 +514,8 @@ if __name__ == "__main__":
                 if action == True:
                     hitflag = 1
             hitlist.append(hitflag)
-            # if Won
-            if status == "LOST":
+            # if Lost
+            if status == "LOST" or status == "SURRENDER":
                 #print("WON")
                 winlist.append(0)
             else:
