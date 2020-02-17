@@ -9,7 +9,8 @@ import csv
 from importer.StrategyImporter import StrategyImporter
 
 
-GAMES = 20000
+
+GAMES = 50000
 SHOE_SIZE = 6
 SHOE_PENETRATION = 0.25
 BET_SPREAD = 20.0
@@ -256,14 +257,19 @@ class Player(object):
         self.dealer_hand = new_dealer_hand
 
     def play(self, shoe):
+        actions = []
         for hand in self.hands:
-            # print "Playing Hand: %s" % hand
-            self.play_hand(hand, shoe)
+            #print "Playing Hand: %s" % hand
+            hitflag = self.play_hand(hand, shoe)
+            actions.append(hitflag)
+        return actions
 
     def play_hand(self, hand, shoe):
+        hitflag = False
         if hand.length() < 2:
             if hand.cards[0].name == "Ace":
                 hand.cards[0].value = 11
+            hitflag = True
             self.hit(hand, shoe)
 
         while not hand.busted() and not hand.blackjack():
@@ -276,8 +282,9 @@ class Player(object):
 
             if flag == 'D':
                 if hand.length() == 2:
-                    # print "Double Down"
+                    #print "Double Down"
                     hand.doubled = True
+                    hitflag = True
                     self.hit(hand, shoe)
                     break
                 else:
@@ -285,13 +292,14 @@ class Player(object):
 
             if flag == 'Sr':
                 if hand.length() == 2:
-                    # print "Surrender"
+                    #print "Surrender"
                     hand.surrender = True
                     break
                 else:
                     flag = 'H'
 
             if flag == 'H':
+                hitflag = True
                 self.hit(hand, shoe)
 
             if flag == 'P':
@@ -299,15 +307,16 @@ class Player(object):
 
             if flag == 'S':
                 break
+        return hitflag
 
     def hit(self, hand, shoe):
         c = shoe.deal()
         hand.add_card(c)
-        # print "Hitted: %s" % c
+        #print "Hitted: %s" % c
 
     def split(self, hand, shoe):
         self.hands.append(hand.split())
-        # print "Splitted %s" % hand
+        #print "Splitted %s" % hand
         self.play_hand(hand, shoe)
 
 
@@ -328,7 +337,7 @@ class Dealer(object):
     def hit(self, shoe):
         c = shoe.deal()
         self.hand.add_card(c)
-        # print "Dealer hitted: %s" %c
+        #print "Dealer hitted: %s" %c
 
     # Returns an array of 6 numbers representing the probability that the final score of the dealer is
     # [17, 18, 19, 20, 21, Busted] '''
@@ -351,6 +360,7 @@ class Tree(object):
         self.tree.append(start)
 
     def add_a_statistical_card(self, stat_card):
+        print("stat\n")
         # New set of leaves in the tree
         leaves = []
         for p in self.tree[-1] :
@@ -379,6 +389,7 @@ class Game(object):
         self.dealer = Dealer()
 
     def get_hand_winnings(self, hand):
+        #print("********get_hand_winnings*************")
         win = 0.0
         bet = self.stake
         if not hand.surrender:
@@ -418,33 +429,41 @@ class Game(object):
 
         win *= self.stake
 
-        return win, bet
+        return win, bet,status
 
     def play_round(self):
         if self.shoe.truecount() > 6:
             self.stake = BET_SPREAD
         else:
             self.stake = 1.0
-
-        player_hand = Hand([self.shoe.deal(), self.shoe.deal()])
+            
+        # initializes cards to player
+        player_hand = Hand([self.shoe.deal(), self.shoe.deal()]) 
+        # initializes cards to dealer
         dealer_hand = Hand([self.shoe.deal()])
-        self.player.set_hands(player_hand, dealer_hand)
+        # resetting player and dealer hands
+        self.player.set_hands(player_hand, dealer_hand)           
         self.dealer.set_hand(dealer_hand)
-        # print "Dealer Hand: %s" % self.dealer.hand
-        # print "Player Hand: %s\n" % self.player.hands[0]
-
-        self.player.play(self.shoe)
+        #print "Dealer Hand: %s" % self.dealer.hand
+        #print "Player Hand: %s\n" % self.player.hands[0]
+        
+        player_init_hand = player_hand.value                    # for learning purpose
+        dealer_init_card = self.dealer.hand.value               # for learning purpose
+        
+        actions = self.player.play(self.shoe)
         self.dealer.play(self.shoe)
-
-        # print ""
-
+        
+        #print ""
         for hand in self.player.hands:
-            win, bet = self.get_hand_winnings(hand)
+            win, bet, status = self.get_hand_winnings(hand)
             self.money += win
             self.bet += bet
-            # print "Player Hand: %s %s (Value: %d, Busted: %r, BlackJack: %r, Splithand: %r, Soft: %r, Surrender: %r, Doubled: %r)" % (hand, status, hand.value, hand.busted(), hand.blackjack(), hand.splithand, hand.soft(), hand.surrender, hand.doubled)
+            #print "Player Hand: %s %s (Value: %d, Busted: %r, BlackJack: %r, Splithand: %r, Soft: %r, Surrender: %r, Doubled: %r)" % (hand, status, hand.value, hand.busted(), hand.blackjack(), hand.splithand, hand.soft(), hand.surrender, hand.doubled)
 
-        # print "Dealer Hand: %s (%d)" % (self.dealer.hand, self.dealer.hand.value)
+            #print "Dealer Hand: %s (%d)" % (self.dealer.hand, self.dealer.hand.value)
+        
+        return player_init_hand, dealer_init_card, actions, hand.soft(),status # return values for learning process
+            
 
     def get_money(self):
         return self.money
@@ -456,31 +475,68 @@ class Game(object):
 if __name__ == "__main__":
     importer = StrategyImporter(sys.argv[1])
     HARD_STRATEGY, SOFT_STRATEGY, PAIR_STRATEGY = importer.import_player_strategy()
-    f1 = open('blackjack_output.csv', 'w')
-    f2 = open('blackjack_summary.csv', 'w')
 
-    writer1 = csv.writer(f1)
-    writer2 = csv.writer(f2)
-    writer1.writerow(["game","net winnings","bet"])
+    #f1 = open('blackjack_output.csv', 'w')
+    #f2 = open('blackjack_summary.csv', 'w')
+    f3 = open('input_features.csv','w')
+    f4 = open('correct_action.csv','w')
+    #writer1 = csv.writer(f1)
+    #writer2 = csv.writer(f2)
+    writer3 = csv.writer(f3)
+    writer4 = csv.writer(f4)
+    #writer1.writerow(["game","net winnings","bet"])
     moneys = []
     bets = []
     countings = []
     nb_hands = 0
+    player_init_hands = []
+    dealer_init_hands = []
+    hitlist = []
+    softhand = []
+    winlist = []
+    input_list = []
     for g in range(GAMES):
-        game = Game()
+        game = Game() # Instantiates self.shoe = Shoe(SHOE_SIZE),
         while not game.shoe.reshuffle:
-            # print '%s GAME no. %d %s' % (20 * '#', i + 1, 20 * '#')
-            game.play_round()
+            #print '%s GAME no. %d %s' % (20 * '#', g + 1, 20 * '#')
             nb_hands += 1
+            hitflag = 0
+            [player_init_cards,dealer_init_card,actions,soft,status] = game.play_round() # inisde is play_hand
+            player_init_hands.append(player_init_cards)
+            dealer_init_hands.append(dealer_init_card)
+            # if Aces
+            if soft == True:
+                softhand.append(1)
+            else:
+                softhand.append(0)
+            # if hit
+            for action in actions:
+                if action == True:
+                    hitflag = 1
+            hitlist.append(hitflag)
+            # if Won
+            if status == "LOST":
+                #print("WON")
+                winlist.append(0)
+            else:
+                #print(status)
+                winlist.append(1)
+
+
 
         moneys.append(game.get_money())
         bets.append(game.get_bet())
         countings += game.shoe.count_history
-        writer1.writerow([g+1,game.get_money(),game.get_bet()])
+        #writer1.writerow([g+1,game.get_money(),game.get_bet()])
 
         #print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
-    
-    f1.close()
+    for i in range(0,len(player_init_hands)):
+        input_list.append([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
+        writer3.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
+        writer4.writerow([winlist[i]])
+    f3.close()
+    f4.close()
+    #f1.close()
     sume = 0.0
     total_bet = 0.0
     for value in moneys:
@@ -491,17 +547,18 @@ if __name__ == "__main__":
     print "\n%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)
     print "%0.2f total bet" % total_bet
     print("Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet)))
-    writer2.writerow(["%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)])
-    writer2.writerow(["%0.2f total bet" % total_bet])
-    writer2.writerow(["Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet))])
-    f2.close()
+    #writer2.writerow(["%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)])
+    #writer2.writerow(["%0.2f total bet" % total_bet])
+    #writer2.writerow(["Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet))])
+    #f2.close()
     moneys = sorted(moneys)
     fit = stats.norm.pdf(moneys, np.mean(moneys), np.std(moneys))  # this is a fitting indeed
-    pl.plot(moneys, fit, '-o')
-    pl.hist(moneys, normed=True)
-    pl.show()
+    #pl.plot(moneys, fit, '-o')
+    #pl.hist(moneys, normed=True)
+    #pl.show()
 
-    plt.ylabel('count')
-    plt.plot(countings, label='x')
-    plt.legend()
-    plt.show()
+    #plt.ylabel('count')
+    #plt.plot(countings, label='x')
+    #plt.legend()
+    #plt.show()
+    
