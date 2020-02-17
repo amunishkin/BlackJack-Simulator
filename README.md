@@ -7,6 +7,10 @@ Flexible BlackJack-Simulator written in Python. It takes a given basic strategy 
 
     python BlackJack.py strategy/BasicStrategy.csv
 
+    python3 blackjack_NN.py 
+
+    python3 orderedresults.py
+
 Omega II Count:
 
 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | J | Q | K | A |
