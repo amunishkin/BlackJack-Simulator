@@ -1,3 +1,4 @@
+# run with: python BlackJack.py strategy/BasicStrategy.csv
 import sys
 from random import shuffle
 
@@ -10,7 +11,7 @@ from importer.StrategyImporter import StrategyImporter
 
 
 
-GAMES = 50000
+GAMES = 2
 SHOE_SIZE = 6
 SHOE_PENETRATION = 0.25
 BET_SPREAD = 20.0
@@ -360,7 +361,7 @@ class Tree(object):
         self.tree.append(start)
 
     def add_a_statistical_card(self, stat_card):
-        print("stat\n")
+        #print("stat\n")
         # New set of leaves in the tree
         leaves = []
         for p in self.tree[-1] :
@@ -516,10 +517,9 @@ if __name__ == "__main__":
             hitlist.append(hitflag)
             # if Lost
             if status == "LOST" or status == "SURRENDER":
-                #print("WON")
+                #print(status)
                 winlist.append(0)
             else:
-                #print(status)
                 winlist.append(1)
 
 
@@ -544,9 +544,9 @@ if __name__ == "__main__":
     for value in bets:
         total_bet += value
 
-    print "\n%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)
-    print "%0.2f total bet" % total_bet
-    print("Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet)))
+    #print "\n%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)
+    #print "%0.2f total bet" % total_bet
+    #print("Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet)))
     #writer2.writerow(["%d hands overall, %0.2f hands per game on average" % (nb_hands, float(nb_hands) / GAMES)])
     #writer2.writerow(["%0.2f total bet" % total_bet])
     #writer2.writerow(["Overall winnings: {} (edge = {} %)".format("{0:.2f}".format(sume), "{0:.3f}".format(100.0*sume/total_bet))])
