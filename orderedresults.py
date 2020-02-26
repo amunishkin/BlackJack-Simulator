@@ -331,7 +331,10 @@ dealer_label = ["2","3","4","5","6","7","8","9","10","A"]
 for i in range(len(player_label)):
     for j in range(len(dealer_label)):
         prob2[i][j] = round(prob2[i][j]/cntr[i][j],2)
-        if hit_cnt[i][j]/cntr[i][j] >= 0.50:
+        hitmean = hit_cnt[i][j]/cntr[i][j]
+        print(hitmean)
+        if hitmean >= 0.50:
+            
             hit_mean[i][j] = 1
         else:
             hit_mean[i][j] = 0

@@ -479,8 +479,8 @@ if __name__ == "__main__":
 
     #f1 = open('blackjack_output.csv', 'w')
     #f2 = open('blackjack_summary.csv', 'w')
-    f3 = open('input_features.csv','w')
-    f4 = open('correct_action.csv','w')
+    f3 = open('input_features.csv','wb')
+    f4 = open('correct_action.csv','wb')
     #writer1 = csv.writer(f1)
     #writer2 = csv.writer(f2)
     writer3 = csv.writer(f3)
