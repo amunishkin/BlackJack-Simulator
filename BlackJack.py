@@ -11,7 +11,7 @@ from importer.StrategyImporter import StrategyImporter
 
 
 
-GAMES = 2
+GAMES = 50000
 SHOE_SIZE = 6
 SHOE_PENETRATION = 0.25
 BET_SPREAD = 20.0
@@ -495,7 +495,6 @@ if __name__ == "__main__":
     hitlist = []
     softhand = []
     winlist = []
-    input_list = []
     for g in range(GAMES):
         game = Game() # Instantiates self.shoe = Shoe(SHOE_SIZE),
         while not game.shoe.reshuffle:
@@ -531,7 +530,6 @@ if __name__ == "__main__":
 
         #print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
     for i in range(0,len(player_init_hands)):
-        input_list.append([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
         writer3.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
         writer4.writerow([winlist[i]])
     f3.close()
