@@ -36,7 +36,7 @@ model.fit(train_X, train_Y, epochs=30, batch_size=256, verbose=1)
 pred_Y_train = model.predict(train_X)   
 
 actuals = train_Y[:,-1]
-f = open('results.csv','w')
+f = open('results.csv','wb')
 w = csv.writer(f)
 for i in range(0,len(pred_Y_train)):
     #game_results.append([valuelist[i][0],valuelist[i][1],valuelist[i][2],valuelist[i][3],pred_Y_train[i][0]])
