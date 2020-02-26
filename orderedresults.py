@@ -66,24 +66,6 @@ play21 = []
 
 winlist =[]
 
-max4 = 0
-max5 = 0
-max6 = 0
-max7 = 0
-max8 = 0
-max9 = 0
-max10 = 0
-max11 = 0
-max12 = 0
-max13 = 0
-max14 = 0
-max15 = 0
-max16 = 0
-max17 = 0
-max18 = 0
-max19 = 0
-max20 = 0
-max21 = 0
 
 with open('correct_action.csv') as input_file:
     csv_reader = csv.reader(input_file, delimiter=',')
