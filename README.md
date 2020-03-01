@@ -19,6 +19,8 @@ Flexible BlackJack-Simulator written in Python. It takes a given basic strategy 
 
     python3 orderedresults.py
 
+### BlackJack.py simulator info
+
 Omega II Count:
 
 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | J | Q | K | A |
@@ -27,7 +29,7 @@ Omega II Count:
 
 So, for example if there is a player-favorable count like +20 by 2 decks remaining, the simulator bets the standard bet times the specified *BET_SPREAD*.
 
-### Definition of Terms
+Definition of Terms:
 
 The simulator involves several concepts related to Blackjack game play:
 * A *Hand* is a single hand of Blackjack, consisting of two or more cards
@@ -35,7 +37,7 @@ The simulator involves several concepts related to Blackjack game play:
 * A *Shoe* consists of multiple card decks consisting of SHOE_SIZE times 52 cards
 * A *Game* is a sequence of Rounds that starts with a fresh *Shoe* and ends when the *Shoe* gets reshuffled
 
-### Result
+Result:
 
 The simulator provides the net winnings result per game played and an overall result summing up all the game results. The following output for example  indicates, that in game no. 67 the simulated player won 18 hands more than he lost. On the other hand in game no. 68 the simulator lost 120 hands more than he won.
 
@@ -52,7 +54,7 @@ This graph displays the development of the count for each game. You can see that
 
 ![Counts Distribution](/documentation/counts.png?raw=true)
 
-### Gaming Rules
+Gaming Rules:
 
 The simulator plays with the following casino rules:
 
@@ -61,7 +63,7 @@ The simulator plays with the following casino rules:
 * No BlackJack after splitting hands
 * 3 times 7 is counted as a BlackJack
 
-### Configuration Variables
+Configuration Variables:
 
 | Variable        | Description         |
 | ------------- |-------------|
@@ -71,7 +73,7 @@ The simulator plays with the following casino rules:
 | *SHOE_PENETRATION*  | Indicates the percentage of cards that still remain in the shoe, when the shoe gets reshuffled |
 | *BET_SPREAD*  | The multiplier for the bet size in a player favorable counting situation |
 
-### Sample Configuration
+Sample Configuration:
 
     GAMES = 1
     ROUNDS = 10
@@ -79,7 +81,7 @@ The simulator plays with the following casino rules:
     SHOE_PENETRATION = 0.2 # reshuffle after 80% of all cards are played
     BET_SPREAD = 20.0 # Bet 20-times the money if the count is player-favorable
     
-### Strategy
+Strategy:
 
 Any strategy can be fed into the simulator as a .csv file. The default strategy that comes with this simulator looks like the following:
 
@@ -93,7 +95,8 @@ Any strategy can be fed into the simulator as a .csv file. The default strategy 
 * D ... Double Down
 * P ... Split
 
-### Note on the shuffle method used
+Note on the shuffle method used:
+
 The shuffle method used is the default random.shuffle() which comes with a warning :  
 *"[if] the total number of permutations of x is larger than the period of most random number generators, [then] most permutations of a long sequence can never be generated."*  
 https://docs.python.org/2/library/random.html  
