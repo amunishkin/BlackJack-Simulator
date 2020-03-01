@@ -1,19 +1,33 @@
-BlackJack-Simulator with OMEGA II Card Counting
-==============================================
+BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning for finding optimal strategy
+==========================================================================================================
 
-Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
+(BlackJack.py) Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
+
+(blackjack_NN.py) Basic Neural Network learning to find probabilities of winning given hit/stand action and player hand vs. dealer hand as a state. (orderedresults.py) plots the probabilities as tables.
 
 ### Pre-install stuff
 
-    python 2.7.17 - for BlackJack simulator
+* python 2.7.17 - for BlackJack simulator
+* python 3.6.3 (64bit for Windows) - for Neural Network
+* TensorFlow 2 and keras - for Neural Network
 
-    python 3.6.3 (64bit for Windows)
+    pip3 install --upgrade tensorflow
 
-    TensorFlow 2
+    pip3 install numpy scipy scikit-learn pillow h5py
+
+    pip3 install keras 
+
+* keras-rl - for deep reinforcement learning (Deep RL)
+
+    pip3 install keras-rl
 
 ### Running
 
+* Simulator and generate data for Neural Network
+
     python BlackJack.py strategy/BasicStrategy.csv
+
+* Run Neural Network and plot results
 
     python3 blackjack_NN.py 
 
