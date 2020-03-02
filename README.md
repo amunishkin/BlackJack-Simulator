@@ -25,7 +25,23 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
 
      pip3 install gym
 
-### Running
+1. wandb - for cloud sync for data visualization of training error
+
+     pip3 install wandb
+
+### Running DeepSARSA and cloud sync
+
+     wandb on
+
+     wandb login 1a4719ebf6d5eb0add58f584d8fa2fbcda36927b
+
+     python3 blackjack_DeepSARSA.py
+
+     wandb off
+
+To see the data from this run go to [DeepSARSA](https://app.wandb.ai/amunishkin/cse240-deepsarsa)
+
+### Running Neural Network on BlackJack simulator data
 
 1. Simulator and generate data for Neural Network
 
@@ -36,10 +52,6 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
      python3 blackjack_NN.py 
 
      python3 orderedresults.py
-
-1. Run Deep SARSA
-
-     python3 blackjack_DeepSARSA.py
 
 ### BlackJack.py simulator info
 
