@@ -1,11 +1,11 @@
 BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning for finding optimal strategy
 ==========================================================================================================
 
-'BlackJack.py' Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
+**BlackJack.py** Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
 
-'blackjack_NN.py' Basic Neural Network learning to find probabilities of winning given hit/stand action and player hand vs. dealer hand as a state. (orderedresults.py) plots the probabilities as tables.
+**blackjack_NN.py** Basic Neural Network learning to find probabilities of winning given hit/stand action and player hand vs. dealer hand as a state. (orderedresults.py) plots the probabilities as tables.
 
-'blackjack_DeepSARSA.py' Basic Deep RL method using SARSA algorithm for learning 1 deck player blackjack. Test so far...
+**blackjack_DeepSARSA.py** Basic Deep RL method using SARSA algorithm for learning 1 deck player blackjack. Test so far...
 
 ### Pre-install stuff
 
