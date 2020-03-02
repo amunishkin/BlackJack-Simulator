@@ -5,6 +5,8 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
 
 (blackjack_NN.py) Basic Neural Network learning to find probabilities of winning given hit/stand action and player hand vs. dealer hand as a state. (orderedresults.py) plots the probabilities as tables.
 
+(blackjack_DeepSARSA.py) Basic Deep RL method using SARSA algorithm for learning 1 deck player blackjack. Test so far...
+
 ### Pre-install stuff
 
 1. python 2.7.17 - for BlackJack simulator
