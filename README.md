@@ -7,9 +7,9 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
 
 ### Pre-install stuff
 
-* python 2.7.17 - for BlackJack simulator
-* python 3.6.3 (64bit for Windows) - for Neural Network
-* TensorFlow 2 and keras - for Neural Network
+1. python 2.7.17 - for BlackJack simulator
+1. python 3.6.3 (64bit for Windows) - for Neural Network
+1. TensorFlow 2 and keras - for Neural Network
 
      pip3 install --upgrade tensorflow
 
@@ -17,7 +17,7 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
 
      pip3 install keras 
 
-* keras-rl and gym - for deep reinforcement learning (Deep RL)
+1. keras-rl and gym - for deep reinforcement learning (Deep RL)
 
      pip3 install keras-rl
 
@@ -25,17 +25,17 @@ BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning f
 
 ### Running
 
-* Simulator and generate data for Neural Network
+1. Simulator and generate data for Neural Network
 
      python BlackJack.py strategy/BasicStrategy.csv
 
-* Run Neural Network and plot results
+1. Run Neural Network and plot results
 
      python3 blackjack_NN.py 
 
      python3 orderedresults.py
 
-* Run Deep SARSA
+1. Run Deep SARSA
 
      python3 blackjack_DeepSARSA.py
 
