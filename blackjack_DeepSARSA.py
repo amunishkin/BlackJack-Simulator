@@ -9,6 +9,16 @@ from rl.agents import SARSAAgent
 from rl.policy import BoltzmannQPolicy
 
 
+
+# Init wandb --- web sync for data view
+import wandb
+from wandb.keras import WandbCallback
+#from rl.callbacks import WandbCallback
+wandb.init(project="cse240-deepsarsa")
+#--------------------------------------
+
+
+
 ENV_NAME = 'Blackjack-v0'
 
 
@@ -35,15 +45,19 @@ policy = BoltzmannQPolicy()
 sarsa = SARSAAgent(model=model, nb_actions=nb_actions, nb_steps_warmup=10, policy=policy)
 sarsa.compile(Adam(lr=1e-3), metrics=['mae'])
 
-# Okay, now it's time to learn something! We visualize the training here for show, but this
-# slows down training quite a lot. You can always safely abort the training prematurely using
-# Ctrl + C.
-sarsa.fit(env, nb_steps=1000, visualize=False, verbose=2)
+# training with visualization of sync
+sarsa.fit(env, nb_steps=1000, callbacks=[WandbCallback()])
 
 # After training is done, we save the final weights.
 sarsa.save_weights('sarsa_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
 
 # Finally, evaluate our algorithm for 5 episodes.
 #sarsa.test(env, nb_episodes=5, visualize=True) #not implemented yet
+
+
+
+# by default, this will save to a new subfolder for files associated
+# with your run, created in wandb.run.dir (which is ./wandb by default)
+wandb.save('sarsa_{}_weights.h5'.format(ENV_NAME))
 
 
