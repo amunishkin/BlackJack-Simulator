@@ -1,23 +1,57 @@
-BlackJack-Simulator with OMEGA II Card Counting
-==============================================
+BlackJack-Simulator with OMEGA II Card Counting and RL Neural-Network learning for finding optimal strategy
+==========================================================================================================
 
-Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
+**BlackJack.py** Flexible BlackJack-Simulator written in Python. It takes a given basic strategy as input (defined in a .csv-file) and simulates that strategy over a given amount of time. The simulator also counts cards sticking to the [OMEGA II Count](http://www.countingedge.com/card-counting/advanced-omega-ii/), which basically gives every card some value. Depending on the current count the bet size gets adjusted.
+
+**blackjack_NN.py** Basic Neural Network learning to find probabilities of winning given hit/stand action and player hand vs. dealer hand as a state. (orderedresults.py) plots the probabilities as tables.
+
+**blackjack_DeepSARSA.py** Basic Deep RL method using SARSA algorithm for learning 1 deck player blackjack. Test so far...
 
 ### Pre-install stuff
 
-    python 2.7.17 - for BlackJack simulator
+1. python 2.7.17 - for BlackJack simulator
+1. python 3.6.3 (64bit for Windows) - for Neural Network
+1. TensorFlow 2 and keras - for Neural Network
 
-    python 3.6.3 (64bit for Windows)
+     pip3 install --upgrade tensorflow
 
-    TensorFlow 2
+     pip3 install numpy scipy scikit-learn pillow h5py
 
-### Running
+     pip3 install keras 
 
-    python BlackJack.py strategy/BasicStrategy.csv
+1. keras-rl and gym - for deep reinforcement learning (Deep RL)
 
-    python3 blackjack_NN.py 
+     pip3 install keras-rl
 
-    python3 orderedresults.py
+     pip3 install gym
+
+1. wandb - for cloud sync for data visualization of training error
+
+     pip3 install wandb
+
+### Running DeepSARSA and cloud sync
+
+     wandb on
+
+     wandb login 1a4719ebf6d5eb0add58f584d8fa2fbcda36927b
+
+     python3 blackjack_DeepSARSA.py
+
+     wandb off
+
+To see the data from this run go to [DeepSARSA](https://app.wandb.ai/amunishkin/cse240-deepsarsa)
+
+### Running Neural Network on BlackJack simulator data
+
+1. Simulator and generate data for Neural Network
+
+     python BlackJack.py strategy/BasicStrategy.csv
+
+1. Run Neural Network and plot results
+
+     python3 blackjack_NN.py 
+
+     python3 orderedresults.py
 
 ### BlackJack.py simulator info
 
