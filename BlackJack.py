@@ -480,7 +480,7 @@ if __name__ == "__main__":
     #f1 = open('blackjack_output.csv', 'w')
     #f2 = open('blackjack_summary.csv', 'w')
     f3 = open('input_features.csv','wb')
-    f4 = open('correct_action.csv','wb')
+    f4 = open('actual_results.csv','wb')
     #writer1 = csv.writer(f1)
     #writer2 = csv.writer(f2)
     writer3 = csv.writer(f3)
@@ -531,7 +531,7 @@ if __name__ == "__main__":
         #print("WIN for Game no. %d: %s (%s bet)" % (g + 1, "{0:.2f}".format(game.get_money()), "{0:.2f}".format(game.get_bet())))
     for i in range(0,len(player_init_hands)):
         writer3.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
-        writer4.writerow([winlist[i]])
+        writer4.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i],winlist[i]])
     f3.close()
     f4.close()
     #f1.close()

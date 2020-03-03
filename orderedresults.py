@@ -2,6 +2,7 @@ import numpy as np
 import csv
 import operator
 import matplotlib.pyplot as plt 
+import math
 
 p2=open("card2.csv", 'w',newline='') #More fixes for Windows
 p3=open("card3.csv", 'w',newline='')
@@ -63,24 +64,31 @@ play19 = []
 play20 = []
 play21 = []
 
-winlist =[]
 
-
-with open('correct_action.csv') as input_file:
+cntr_data = np.zeros((18,10))                                     # counter for landing in state
+cntr_win = np.zeros((18,10))                                       # counter for actual wins
+with open('actual_results.csv') as input_file:
     csv_reader = csv.reader(input_file, delimiter=',')
     for row in csv_reader:
-        winlist.append(int(row[0]))
-
+        act_p_val = int(row[0])
+        act_d_val = int(row[1])
+        win = int(row[4])
+        cntr_data[act_p_val-4][act_d_val-2] =  cntr_data[act_p_val-4][act_d_val-2] + 1
+        if win == 1:
+            cntr_win[act_p_val-4][act_d_val-2] =  cntr_win[act_p_val-4][act_d_val-2] + 1
+        
+cntr_win = np.multiply(cntr_win,1/cntr_data)
+#print(win)
 #print(winlist)
-prob1 = np.zeros((18,10))                                           # 2D array for finding max of probabilities 
-prob2 = np.zeros((18,10))                                           # 2D array for finding mean of probabilites
+prob_max = np.zeros((18,10))                                           # 2D array for finding max of probabilities 
+prob_mean = np.zeros((18,10))                                           # 2D array for finding mean of probabilites
 hit_max = np.zeros((18,10))                                       # 2D array for storing 1-Hit and 0-Stand
 hit_mean = np.zeros((18,10))                                     # 2D array to store hit or not hit based upon mean hitting
 hit_cnt = np.zeros((18,10))                                          # 2D array hit counter
 cntr = np.zeros((18,10))                                               # 2D array to keep count for mean computation
-with open('results.csv') as input_file:
+with open('predicted_results.csv') as input_file:
     csv_reader = csv.reader(input_file, delimiter=',')
-    
+
     for i, row in enumerate(csv_reader):
         val_player = float(row[1])
         val_dealer = float(row[2])
@@ -88,230 +96,234 @@ with open('results.csv') as input_file:
         val_hit = float(row[4])
         probability = float(row[5])
         if val_player == 4.0:
-            prob2[0][int(val_dealer)-2] =  prob2[0][int(val_dealer)-2] + probability 
+            prob_mean[0][int(val_dealer)-2] =  prob_mean[0][int(val_dealer)-2] + probability 
             cntr[0][int(val_dealer)-2] = cntr[0][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[0][int(val_dealer)-2] = hit_cnt[0][int(val_dealer)-2] + 1
             
             if [val_player,val_dealer,val_soft,val_hit] not in play4:
                 play4.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[0][int(val_dealer)-2]:
-                    prob1[0][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[0][int(val_dealer)-2]:
+                    prob_max[0][int(val_dealer)-2] =  round(probability,2)
                     hit_max[0][int(val_dealer)-2] = val_hit
-                    w4.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w4.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 5.0:
-            prob2[1][int(val_dealer)-2] =  prob2[1][int(val_dealer)-2] + probability
+            prob_mean[1][int(val_dealer)-2] =  prob_mean[1][int(val_dealer)-2] + probability
             cntr[1][int(val_dealer)-2] = cntr[1][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[1][int(val_dealer)-2] = hit_cnt[1][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play5:
                 play5.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[1][int(val_dealer)-2]:
-                    prob1[1][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[1][int(val_dealer)-2]:
+                    prob_max[1][int(val_dealer)-2] =  round(probability,2)
                     hit_max[1][int(val_dealer)-2] = val_hit
-                    w5.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    if probability >= 0.52:
+                        win_predicted = 1
+                    else:
+                        win_predicted = 0
+                    w5.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 6.0:
-            prob2[2][int(val_dealer)-2] =  prob2[2][int(val_dealer)-2] + probability
+            prob_mean[2][int(val_dealer)-2] =  prob_mean[2][int(val_dealer)-2] + probability
             cntr[2][int(val_dealer)-2] = cntr[2][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[2][int(val_dealer)-2] = hit_cnt[2][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play6:
                 play6.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[2][int(val_dealer)-2]:
-                    prob1[2][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[2][int(val_dealer)-2]:
+                    prob_max[2][int(val_dealer)-2] =  round(probability,2)
                     hit_max[2][int(val_dealer)-2] = val_hit
-                    w6.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w6.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 7.0:
-            prob2[3][int(val_dealer)-2] =  prob2[3][int(val_dealer)-2] + probability
+            prob_mean[3][int(val_dealer)-2] =  prob_mean[3][int(val_dealer)-2] + probability
             cntr[3][int(val_dealer)-2] = cntr[3][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[3][int(val_dealer)-2] = hit_cnt[3][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play7:
                 play7.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[3][int(val_dealer)-2]:
-                    prob1[3][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[3][int(val_dealer)-2]:
+                    prob_max[3][int(val_dealer)-2] =  round(probability,2)
                     hit_max[3][int(val_dealer)-2] = val_hit
-                    w7.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w7.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 8.0:
-            prob2[4][int(val_dealer)-2] =  prob2[4][int(val_dealer)-2] + probability
+            prob_mean[4][int(val_dealer)-2] =  prob_mean[4][int(val_dealer)-2] + probability
             cntr[4][int(val_dealer)-2] = cntr[4][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[4][int(val_dealer)-2] = hit_cnt[4][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play8:
                 play8.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[4][int(val_dealer)-2]:
-                    prob1[4][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[4][int(val_dealer)-2]:
+                    prob_max[4][int(val_dealer)-2] =  round(probability,2)
                     hit_max[4][int(val_dealer)-2] = val_hit
-                    w8.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w8.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 9.0:
-            prob2[5][int(val_dealer)-2] =  prob2[5][int(val_dealer)-2] + probability
+            prob_mean[5][int(val_dealer)-2] =  prob_mean[5][int(val_dealer)-2] + probability
             cntr[5][int(val_dealer)-2] = cntr[5][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[5][int(val_dealer)-2] = hit_cnt[5][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play9:
                 play9.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[5][int(val_dealer)-2]:
-                    prob1[5][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[5][int(val_dealer)-2]:
+                    prob_max[5][int(val_dealer)-2] =  round(probability,2)
                     hit_max[5][int(val_dealer)-2] = val_hit
-                    w9.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w9.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 10.0:
-            prob2[6][int(val_dealer)-2] =  prob2[6][int(val_dealer)-2] + probability
+            prob_mean[6][int(val_dealer)-2] =  prob_mean[6][int(val_dealer)-2] + probability
             cntr[6][int(val_dealer)-2] = cntr[6][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[6][int(val_dealer)-2] = hit_cnt[6][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play10:
                 play10.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[6][int(val_dealer)-2]:
+                if probability > prob_max[6][int(val_dealer)-2]:
                     max10 = probability
-                    prob1[6][int(val_dealer)-2] =  round(probability,2)
+                    prob_max[6][int(val_dealer)-2] =  round(probability,2)
                     hit_max[6][int(val_dealer)-2] = val_hit
-                    w10.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w10.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 11.0:
-            prob2[7][int(val_dealer)-2] =  prob2[7][int(val_dealer)-2] + probability
+            prob_mean[7][int(val_dealer)-2] =  prob_mean[7][int(val_dealer)-2] + probability
             cntr[7][int(val_dealer)-2] = cntr[7][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[7][int(val_dealer)-2] = hit_cnt[7][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play11:
                 play11.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[7][int(val_dealer)-2]:
-                    prob1[7][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[7][int(val_dealer)-2]:
+                    prob_max[7][int(val_dealer)-2] =  round(probability,2)
                     hit_max[7][int(val_dealer)-2] = val_hit
-                    w11.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w11.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 12.0:
-            prob2[8][int(val_dealer)-2] =  prob2[8][int(val_dealer)-2] + probability
+            prob_mean[8][int(val_dealer)-2] =  prob_mean[8][int(val_dealer)-2] + probability
             cntr[8][int(val_dealer)-2] = cntr[8][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[8][int(val_dealer)-2] = hit_cnt[8][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play12:
                 play12.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[8][int(val_dealer)-2]:
+                if probability > prob_max[8][int(val_dealer)-2]:
 
-                    prob1[8][int(val_dealer)-2] =  round(probability,2)
+                    prob_max[8][int(val_dealer)-2] =  round(probability,2)
                     hit_max[8][int(val_dealer)-2] = val_hit
-                    w12.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w12.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 13.0:
-            prob2[9][int(val_dealer)-2] =  prob2[9][int(val_dealer)-2] + probability
+            prob_mean[9][int(val_dealer)-2] =  prob_mean[9][int(val_dealer)-2] + probability
             cntr[9][int(val_dealer)-2] = cntr[9][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[9][int(val_dealer)-2] = hit_cnt[9][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play13:
                 play13.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[9][int(val_dealer)-2]:
-                    prob1[9][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[9][int(val_dealer)-2]:
+                    prob_max[9][int(val_dealer)-2] =  round(probability,2)
                     hit_max[9][int(val_dealer)-2] = val_hit
-                    w13.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w13.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 14.0:
-            prob2[10][int(val_dealer)-2] =  prob2[10][int(val_dealer)-2] + probability
+            prob_mean[10][int(val_dealer)-2] =  prob_mean[10][int(val_dealer)-2] + probability
             cntr[10][int(val_dealer)-2] = cntr[10][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[10][int(val_dealer)-2] = hit_cnt[10][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play14:
                 play14.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[10][int(val_dealer)-2]:
-                    prob1[10][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[10][int(val_dealer)-2]:
+                    prob_max[10][int(val_dealer)-2] =  round(probability,2)
                     hit_max[10][int(val_dealer)-2] = val_hit
-                    w14.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w14.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 15.0:
-            prob2[11][int(val_dealer)-2] =  prob2[11][int(val_dealer)-2] + probability
+            prob_mean[11][int(val_dealer)-2] =  prob_mean[11][int(val_dealer)-2] + probability
             cntr[11][int(val_dealer)-2] = cntr[11][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[11][int(val_dealer)-2] = hit_cnt[11][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play15:
                 play15.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[11][int(val_dealer)-2]:
-                    prob1[11][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[11][int(val_dealer)-2]:
+                    prob_max[11][int(val_dealer)-2] =  round(probability,2)
                     hit_max[11][int(val_dealer)-2] = val_hit
-                    w15.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w15.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 16.0:
-            prob2[12][int(val_dealer)-2] =  prob2[12][int(val_dealer)-2] + probability
+            prob_mean[12][int(val_dealer)-2] =  prob_mean[12][int(val_dealer)-2] + probability
             cntr[12][int(val_dealer)-2] = cntr[12][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[12][int(val_dealer)-2] = hit_cnt[12][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play16:
                 play16.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[12][int(val_dealer)-2]:
-                    prob1[12][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[12][int(val_dealer)-2]:
+                    prob_max[12][int(val_dealer)-2] =  round(probability,2)
                     hit_max[12][int(val_dealer)-2] = val_hit
-                    w16.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w16.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 17.0:
-            prob2[13][int(val_dealer)-2] =  prob2[13][int(val_dealer)-2] + probability
+            prob_mean[13][int(val_dealer)-2] =  prob_mean[13][int(val_dealer)-2] + probability
             cntr[13][int(val_dealer)-2] = cntr[13][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[13][int(val_dealer)-2] = hit_cnt[13][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play17:
                 play17.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[13][int(val_dealer)-2]:
-                    prob1[13][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[13][int(val_dealer)-2]:
+                    prob_max[13][int(val_dealer)-2] =  round(probability,2)
                     hit_max[13][int(val_dealer)-2] = val_hit
-                    w17.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w17.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 18.0:
-            prob2[14][int(val_dealer)-2] =  prob2[14][int(val_dealer)-2] + probability
+            prob_mean[14][int(val_dealer)-2] =  prob_mean[14][int(val_dealer)-2] + probability
             cntr[14][int(val_dealer)-2] = cntr[14][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[14][int(val_dealer)-2] = hit_cnt[14][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play18:
                 play18.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[14][int(val_dealer)-2]:
-                    prob1[14][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[14][int(val_dealer)-2]:
+                    prob_max[14][int(val_dealer)-2] =  round(probability,2)
                     hit_max[14][int(val_dealer)-2] = val_hit
-                    w18.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w18.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 19.0:
-            prob2[15][int(val_dealer)-2] =  prob2[15][int(val_dealer)-2] + probability
+            prob_mean[15][int(val_dealer)-2] =  prob_mean[15][int(val_dealer)-2] + probability
             cntr[15][int(val_dealer)-2] = cntr[15][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[15][int(val_dealer)-2] = hit_cnt[15][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play19:
                 play19.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[15][int(val_dealer)-2]:
-                    prob1[15][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[15][int(val_dealer)-2]:
+                    prob_max[15][int(val_dealer)-2] =  round(probability,2)
                     hit_max[15][int(val_dealer)-2] = val_hit
-                    w19.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w19.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 20.0:
-            prob2[16][int(val_dealer)-2] =  prob2[16][int(val_dealer)-2] + probability
+            prob_mean[16][int(val_dealer)-2] =  prob_mean[16][int(val_dealer)-2] + probability
             cntr[16][int(val_dealer)-2] = cntr[16][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[16][int(val_dealer)-2] = hit_cnt[16][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play20:
                 play20.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[16][int(val_dealer)-2]:
-                    prob1[16][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[16][int(val_dealer)-2]:
+                    prob_max[16][int(val_dealer)-2] =  round(probability,2)
                     hit_max[16][int(val_dealer)-2] = val_hit
-                    w20.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w20.writerow([val_player,val_dealer,val_soft,val_hit,probability])
         elif val_player == 21.0:
-            prob2[17][int(val_dealer)-2] =  prob2[17][int(val_dealer)-2] + probability
+            prob_mean[17][int(val_dealer)-2] =  prob_mean[17][int(val_dealer)-2] + probability
             cntr[17][int(val_dealer)-2] = cntr[17][int(val_dealer)-2] + 1
             if val_hit == 1:
                 hit_cnt[17][int(val_dealer)-2] = hit_cnt[17][int(val_dealer)-2] + 1
                 
             if [val_player,val_dealer,val_soft,val_hit] not in play21:
                 play21.append([val_player,val_dealer,val_soft,val_hit])
-                if probability > prob1[17][int(val_dealer)-2]:
-                    prob1[17][int(val_dealer)-2] =  round(probability,2)
+                if probability > prob_max[17][int(val_dealer)-2]:
+                    prob_max[17][int(val_dealer)-2] =  round(probability,2)
                     hit_max[17][int(val_dealer)-2] = val_hit
-                    w21.writerow([val_player,val_dealer,val_soft,val_hit,probability,winlist[i]])
+                    w21.writerow([val_player,val_dealer,val_soft,val_hit,probability])
                     
 player_label = ["4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21"]
 dealer_label = ["2","3","4","5","6","7","8","9","10","A"]
 
 for i in range(len(player_label)):
     for j in range(len(dealer_label)):
-        prob2[i][j] = round(prob2[i][j]/cntr[i][j],2)
+        prob_mean[i][j] = round(prob_mean[i][j]/cntr[i][j],2)
         hitmean = hit_cnt[i][j]/cntr[i][j]
         #print(hitmean)
         if hitmean >= 0.50:
@@ -319,7 +331,8 @@ for i in range(len(player_label)):
             hit_mean[i][j] = 1
         else:
             hit_mean[i][j] = 0
-
+prob_std = np.zeros((18))
+    
 plt.figure(1)
 fig1, ax1 = plt.subplots()
 im1 = ax1.imshow(hit_max)
@@ -338,7 +351,7 @@ ax1.set_title("MAX: 1-Hit, 0-Stand")
 
 plt.figure(2)
 fig, ax = plt.subplots()
-im = ax.imshow(prob1)
+im = ax.imshow(prob_max)
 
 # We want to show all ticks...
 ax.set_xticks(np.arange(len(dealer_label)))
@@ -355,13 +368,13 @@ ax.set_ylabel("Player's Card Value",fontsize=16)
 # Loop over data dimensions and create text annotations.
 for i in range(len(player_label)):
     for j in range(len(dealer_label)):
-        text = ax.text(j, i, prob1[i, j],
+        text = ax.text(j, i, prob_max[i, j],
                        ha="center", va="center", color="w")                  
 ax.set_title("MAX-Probability of Winning in Blackjack\n with Hit or Not Hit and Ace or No Ace")
 
 plt.figure(3)
 fig2, ax2 = plt.subplots()
-im2 = ax2.imshow(prob2)
+im2 = ax2.imshow(prob_mean)
 ax2.set_xticks(np.arange(len(dealer_label)))
 ax2.set_yticks(np.arange(len(player_label)))
 ax2.set_xticklabels(dealer_label)
@@ -371,7 +384,7 @@ ax2.set_ylabel("Player's Card Value",fontsize=16)
 
 for i in range(len(player_label)):
     for j in range(len(dealer_label)):
-        text = ax2.text(j, i, prob2[i, j],
+        text = ax2.text(j, i, prob_mean[i, j],
                        ha="center", va="center", color="w")       
 ax2.set_title("MEAN-Probability of Winning in Blackjack\n with Hit or Not Hit and Ace or No Ace")
 
@@ -391,6 +404,94 @@ for i in range(len(player_label)):
                        ha="center", va="center", color="w")       
 ax3.set_title("MEAN: 1-Hit, 0-Stand")
 
+mean_p_hand=[]
+mean_d_hand=[]
+mean_p_hand_actual=[]
+mean_d_hand_actual=[]
+std_p_hand=[]
+std_d_hand=[]
+std_p_hand_actual=[]
+std_d_hand_actual=[]
+stdaccum = 0
+stdaccum2 = 0
+stdaccumd = 0
+stdaccum2d = 0
+for i in range(len(player_label)):
+    mean_p_hand.append(sum(prob_mean[i][0:10])/len(prob_mean[i][0:10]))
+    mean_p_hand_actual.append(sum(cntr_win[i][0:10])/len(cntr_win[i][0:10]))
+    for j in range(len(dealer_label)):
+        stdaccum = stdaccum + (prob_mean[i][j]-mean_p_hand[i])**2
+        stdaccum2 = stdaccum2 + (cntr_win[i][j]-mean_p_hand_actual[i])**2
+    std_p_hand.append(math.sqrt(stdaccum/10))
+    std_p_hand_actual.append(math.sqrt(stdaccum2/10))
+
+for j in range(len(dealer_label)): #  column
+    mean_d_hand.append(sum(prob_mean[:,j])/len(prob_mean[:,j]))
+    mean_d_hand_actual.append(sum(cntr_win[:,j])/len(cntr_win[:,j]))
+    for i in range(len(player_label)): # row
+        stdaccumd = stdaccumd + (prob_mean[i,j]-mean_d_hand[j])**2
+        stdaccum2d = stdaccum2d + (cntr_win[i,j]-mean_d_hand_actual[j])**2
+    std_d_hand.append(math.sqrt(stdaccumd/18))
+    std_d_hand_actual.append(math.sqrt(stdaccum2d/18))
+    
+plt.figure(5)
+fig4, ax4 = plt.subplots()
+index = np.arange(18)
+bar_width = 0.35
+
+opacity = 0.4
+error_config = {'ecolor': '0.4'}
+
+rects1 = plt.bar(index, mean_p_hand, bar_width,
+                 alpha=opacity,
+                 color='b',
+                 yerr=std_p_hand,
+                 error_kw=error_config,
+                 label='predicted')
+
+rects2 = plt.bar(index + bar_width, mean_p_hand_actual, bar_width,
+                 alpha=opacity,
+                 color='r',
+                 yerr=std_p_hand,
+                 error_kw=error_config,
+                 label='actual')
+
+plt.xlabel('Player Initial Value',fontsize=16)
+plt.ylabel('Probability of Tie or Win',fontsize=16)
+plt.title('Mean and Standard Deviation \n for Initial Game Configuration ',fontsize=16)
+plt.xticks(index + bar_width / 2, ('4', '5', '6', '7', '8','9','10','11','12','13','14','15','16','17','18','19','20','21'))
+plt.legend()
+plt.tight_layout()
+
+plt.figure(6)
+fig5, ax5 = plt.subplots()
+index = np.arange(10)
+bar_width = 0.35
+
+opacity = 0.4
+error_config = {'ecolor': '0.4'}
+
+print(len(mean_d_hand))
+print(len(std_d_hand))
+rects1 = plt.bar(index, mean_d_hand, bar_width,
+                 alpha=opacity,
+                 color='b',
+                 error_kw=error_config,
+                 label='predicted')
+
+rects2 = plt.bar(index + bar_width, mean_d_hand_actual, bar_width,
+                 alpha=opacity,
+                 color='r',
+                 error_kw=error_config,
+                 label='actual')
+
+plt.xlabel('Dealer Initial Value',fontsize=16)
+plt.ylabel('Probability of Tie or Win',fontsize=16)
+plt.title('Mean for Initial Game Configuration ',fontsize=16)
+plt.xticks(index + bar_width / 2, ('2', '3', '4', '5', '6','7','8','9','10','A'))
+plt.legend()
+
+plt.tight_layout()
 plt.show()
 p2.close()
 p3.close()
