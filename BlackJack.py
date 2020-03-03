@@ -361,7 +361,6 @@ class Tree(object):
         self.tree.append(start)
 
     def add_a_statistical_card(self, stat_card):
-        #print("stat\n")
         # New set of leaves in the tree
         leaves = []
         for p in self.tree[-1] :

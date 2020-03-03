@@ -78,8 +78,7 @@ with open('actual_results.csv') as input_file:
             cntr_win[act_p_val-4][act_d_val-2] =  cntr_win[act_p_val-4][act_d_val-2] + 1
         
 cntr_win = np.multiply(cntr_win,1/cntr_data)
-#print(win)
-#print(winlist)
+
 prob_max = np.zeros((18,10))                                           # 2D array for finding max of probabilities 
 prob_mean = np.zeros((18,10))                                           # 2D array for finding mean of probabilites
 hit_max = np.zeros((18,10))                                       # 2D array for storing 1-Hit and 0-Stand

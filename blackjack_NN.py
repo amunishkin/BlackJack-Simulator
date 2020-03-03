@@ -18,9 +18,7 @@ with open('actual_results.csv') as input_file:
     
 game_results = []
 train_X = np.asarray(valuelist)
-#print(train_X)
 train_Y = np.asarray(winlist, dtype=np.int).reshape(-1,1)
-#print (train_Y)
 model = Sequential()
 model.add(Dense(128))
 model.add(Dense(64))
