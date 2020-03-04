@@ -461,8 +461,9 @@ class Game(object):
             #print "Player Hand: %s %s (Value: %d, Busted: %r, BlackJack: %r, Splithand: %r, Soft: %r, Surrender: %r, Doubled: %r)" % (hand, status, hand.value, hand.busted(), hand.blackjack(), hand.splithand, hand.soft(), hand.surrender, hand.doubled)
 
             #print "Dealer Hand: %s (%d)" % (self.dealer.hand, self.dealer.hand.value)
-        
-        return player_init_hand, dealer_init_card, actions, hand.soft(),status # return values for learning process
+        final_p_value = hand.value
+        final_d_value = self.dealer.hand.value
+        return player_init_hand, dealer_init_card, actions, hand.soft(),status,final_p_value,final_d_value # return values for learning process
             
 
     def get_money(self):
@@ -480,10 +481,12 @@ if __name__ == "__main__":
     #f2 = open('blackjack_summary.csv', 'w')
     f3 = open('input_features.csv','wb')
     f4 = open('actual_results.csv','wb')
+    f5 = open('actual_final_results.csv','wb')
     #writer1 = csv.writer(f1)
     #writer2 = csv.writer(f2)
     writer3 = csv.writer(f3)
     writer4 = csv.writer(f4)
+    writer5 = csv.writer(f5)
     #writer1.writerow(["game","net winnings","bet"])
     moneys = []
     bets = []
@@ -491,6 +494,8 @@ if __name__ == "__main__":
     nb_hands = 0
     player_init_hands = []
     dealer_init_hands = []
+    player_final_hands = []
+    dealer_final_hands = []
     hitlist = []
     softhand = []
     winlist = []
@@ -500,9 +505,11 @@ if __name__ == "__main__":
             #print '%s GAME no. %d %s' % (20 * '#', g + 1, 20 * '#')
             nb_hands += 1
             hitflag = 0
-            [player_init_cards,dealer_init_card,actions,soft,status] = game.play_round() # inisde is play_hand
+            [player_init_cards,dealer_init_card,actions,soft,status,final_p_value,final_d_value] = game.play_round() # inisde is play_hand
             player_init_hands.append(player_init_cards)
             dealer_init_hands.append(dealer_init_card)
+            player_final_hands.append(final_p_value)
+            dealer_final_hands.append(final_d_value)
             # if Aces
             if soft == True:
                 softhand.append(1)
@@ -531,8 +538,10 @@ if __name__ == "__main__":
     for i in range(0,len(player_init_hands)):
         writer3.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i]])
         writer4.writerow([player_init_hands[i],dealer_init_hands[i],softhand[i],hitlist[i],winlist[i]])
+        writer5.writerow([player_final_hands[i],dealer_final_hands[i],softhand[i],hitlist[i],winlist[i]])
     f3.close()
     f4.close()
+    f5.close()
     #f1.close()
     sume = 0.0
     total_bet = 0.0
